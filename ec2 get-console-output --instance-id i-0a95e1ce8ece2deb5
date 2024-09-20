@@ -1,0 +1,178 @@
+{
+    "Reservations": [
+        {
+            "Groups": [],
+            "Instances": [
+                {
+                    "AmiLaunchIndex": 0,
+                    "ImageId": "ami-0bca0e3b9fe48307a",
+                    "InstanceId": "i-0a95e1ce8ece2deb5",
+                    "InstanceType": "t3.small",
+                    "LaunchTime": "2024-09-16T16:13:44+00:00",
+                    "Monitoring": {
+                        "State": "enabled"
+                    },
+                    "Placement": {
+                        "AvailabilityZone": "us-east-1b",
+                        "GroupName": "",
+                        "Tenancy": "default"
+                    },
+                    "PrivateDnsName": "ip-10-0-3-57.ec2.internal",
+                    "PrivateIpAddress": "10.0.3.57",
+                    "ProductCodes": [],
+                    "PublicDnsName": "",
+                    "State": {
+                        "Code": 16,
+                        "Name": "running"
+                    },
+                    "StateTransitionReason": "",
+                    "SubnetId": "subnet-0b57c8a9c90351d07",
+                    "VpcId": "vpc-0d53e1dc877e358e2",
+                    "Architecture": "x86_64",
+                    "BlockDeviceMappings": [
+                        {
+                            "DeviceName": "/dev/xvda",
+                            "Ebs": {
+                                "AttachTime": "2024-09-16T16:13:45+00:00",
+                                "DeleteOnTermination": true,
+                                "Status": "attached",
+                                "VolumeId": "vol-04a40ab6982739eac"
+                            }
+                        }
+                    ],
+                    "ClientToken": "fleet-c7bd2d9d-b42c-c4a5-8c32-23824bb51b7d-0",
+                    "EbsOptimized": false,
+                    "EnaSupport": true,
+                    "Hypervisor": "xen",
+                    "IamInstanceProfile": {
+                        "Arn": "arn:aws:iam::771919296983:instance-profile/eks-5ac8fdcd-65de-1cef-e64f-7dff9febe49a",
+                        "Id": "AIPA3HOPZXHL3L7FWQ72I"
+                    },
+                    "NetworkInterfaces": [
+                        {
+                            "Attachment": {
+                                "AttachTime": "2024-09-16T16:13:44+00:00",
+                                "AttachmentId": "eni-attach-052d51a6727566eba",
+                                "DeleteOnTermination": true,
+                                "DeviceIndex": 0,
+                                "Status": "attached",
+                                "NetworkCardIndex": 0
+                            },
+                            "Description": "",
+                            "Groups": [
+                                {
+                                    "GroupName": "teachua-eks-node-20240916155956213000000009",
+                                    "GroupId": "sg-092c0b67bec2aaa6c"
+                                }
+                            ],
+                            "Ipv6Addresses": [],
+                            "MacAddress": "02:d3:02:9c:7b:ab",
+                            "NetworkInterfaceId": "eni-0d990e305320d4f30",
+                            "OwnerId": "771919296983",
+                            "PrivateIpAddress": "10.0.3.57",
+                            "PrivateIpAddresses": [
+                                {
+                                    "Primary": true,
+                                    "PrivateIpAddress": "10.0.3.57"
+                                }
+                            ],
+                            "SourceDestCheck": true,
+                            "Status": "in-use",
+                            "SubnetId": "subnet-0b57c8a9c90351d07",
+                            "VpcId": "vpc-0d53e1dc877e358e2",
+                            "InterfaceType": "interface"
+                        }
+                    ],
+                    "RootDeviceName": "/dev/xvda",
+                    "RootDeviceType": "ebs",
+                    "SecurityGroups": [
+                        {
+                            "GroupName": "teachua-eks-node-20240916155956213000000009",
+                            "GroupId": "sg-092c0b67bec2aaa6c"
+                        }
+                    ],
+                    "SourceDestCheck": true,
+                    "Tags": [
+                        {
+                            "Key": "Name",
+                            "Value": "node-group-1"
+                        },
+                        {
+                            "Key": "eks:nodegroup-name",
+                            "Value": "node-group-1-2024091616115143480000000e"
+                        },
+                        {
+                            "Key": "aws:autoscaling:groupName",
+                            "Value": "eks-node-group-1-2024091616115143480000000e-5ac8fdcd-65de-1cef-e64f-7dff9febe49a"
+                        },
+                        {
+                            "Key": "eks:cluster-name",
+                            "Value": "teachua-eks"
+                        },
+                        {
+                            "Key": "k8s.io/cluster-autoscaler/enabled",
+                            "Value": "true"
+                        },
+                        {
+                            "Key": "k8s.io/cluster-autoscaler/teachua-eks",
+                            "Value": "owned"
+                        },
+                        {
+                            "Key": "aws:ec2launchtemplate:version",
+                            "Value": "1"
+                        },
+                        {
+                            "Key": "aws:ec2launchtemplate:id",
+                            "Value": "lt-0c92f4e064f5b63d1"
+                        },
+                        {
+                            "Key": "kubernetes.io/cluster/teachua-eks",
+                            "Value": "owned"
+                        },
+                        {
+                            "Key": "aws:ec2:fleet-id",
+                            "Value": "fleet-c7bd2d9d-b42c-c4a5-8c32-23824bb51b7d"
+                        }
+                    ],
+                    "VirtualizationType": "hvm",
+                    "CpuOptions": {
+                        "CoreCount": 1,
+                        "ThreadsPerCore": 2
+                    },
+                    "CapacityReservationSpecification": {
+                        "CapacityReservationPreference": "open"
+                    },
+                    "HibernationOptions": {
+                        "Configured": false
+                    },
+                    "MetadataOptions": {
+                        "State": "applied",
+                        "HttpTokens": "required",
+                        "HttpPutResponseHopLimit": 2,
+                        "HttpEndpoint": "enabled",
+                        "HttpProtocolIpv6": "disabled",
+                        "InstanceMetadataTags": "disabled"
+                    },
+                    "EnclaveOptions": {
+                        "Enabled": false
+                    },
+                    "PlatformDetails": "Linux/UNIX",
+                    "UsageOperation": "RunInstances",
+                    "UsageOperationUpdateTime": "2024-09-16T16:13:44+00:00",
+                    "PrivateDnsNameOptions": {
+                        "HostnameType": "ip-name",
+                        "EnableResourceNameDnsARecord": false,
+                        "EnableResourceNameDnsAAAARecord": false
+                    },
+                    "MaintenanceOptions": {
+                        "AutoRecovery": "default"
+                    },
+                    "CurrentInstanceBootMode": "legacy-bios"
+                }
+            ],
+            "OwnerId": "771919296983",
+            "RequesterId": "376696368883",
+            "ReservationId": "r-0df190c12e419d04b"
+        }
+    ]
+}
