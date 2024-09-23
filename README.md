@@ -45,11 +45,24 @@ export VAULT_ADDR='http://127.0.0.1:8200
 kubectl config get-contexts
 kubectl config use-context
 
+
+After terraform apply:
+
 aws eks --region us-east-1 update-kubeconfig --name teachua
 kubectl create namespace new-teachua
 
+kubectl create secret docker-registry ghcr-secret \
+  --docker-server=ghcr.io \
+  --docker-username=your-github-username \
+  --docker-password=your-github-token \
+  --docker-email=your-email \
+  --namespace=new-teachua
+
+kubectl create secret generic teachua-db-secret \
+  --from-literal=MYSQL_PASSWORD...
+
  
-/teachua-helm-deployment (main) $ helm install teachua ./teachua-chart --namespace new-teachua
+helm install teachua ./teachua-chart --namespace new-teachua
 helm upgrade teachua ./teachua-chart --namespace new-teachua
 
 kubectl get all -n new-teachua
@@ -58,12 +71,7 @@ kubectl get all -n new-teachua
 "https://6B6C648AA86464F24574B06B1BF8922C.yl4.us-east-1.eks.amazonaws.com"
 
 
-kubectl create secret docker-registry ghcr-secret \
-  --docker-server=ghcr.io \
-  --docker-username=your-github-username \
-  --docker-password=your-github-token \
-  --docker-email=your-email \
-  --namespace=new-teachua
+
 
 
 kubectl config use-context <context-name>

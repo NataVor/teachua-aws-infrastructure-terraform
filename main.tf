@@ -31,10 +31,6 @@ resource "aws_internet_gateway" "igw" {
 # NAT Gateway for private subnets
 resource "aws_eip" "nat" {
   domain = "vpc"
-
-  tags = {
-    Name = "nat"
-  }
 }
 
 resource "aws_nat_gateway" "nat" {
@@ -46,6 +42,12 @@ resource "aws_nat_gateway" "nat" {
   }
 
   depends_on = [aws_internet_gateway.igw]
+}
+
+resource "aws_route" "private_nat_route" {
+  route_table_id         = aws_route_table.private_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat.id
 }
 
 resource "aws_subnet" "private_us_east_1a" {
@@ -108,6 +110,19 @@ resource "aws_route_table" "private" {
 
   tags = {
     Name = "private"
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = aws_vpc.main.cidr_block
+    gateway_id = "local"
+  }
+
+  tags = {
+    Name = "Private Route Table"
   }
 }
 
@@ -217,7 +232,7 @@ resource "aws_iam_role_policy_attachment" "nodes_amazon_ec2_container_registry_r
   role       = aws_iam_role.nodes.name
 }
 
-# Optional: only if you want to "SSH" to your EKS nodes.
+# Optional: only for "SSH" to EKS nodes.
 resource "aws_iam_role_policy_attachment" "amazon_ssm_managed_instance_core" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.nodes.name
@@ -256,7 +271,6 @@ resource "aws_eks_node_group" "private_nodes" {
     aws_iam_role_policy_attachment.nodes_amazon_ec2_container_registry_read_only,
   ]
 }
-
 
 data "tls_certificate" "eks" {
   url = aws_eks_cluster.teachua.identity[0].oidc[0].issuer
@@ -305,3 +319,10 @@ resource "helm_release" "ingress_nginx" {
   }
 }
 
+terraform {
+  backend "s3" {
+    bucket = "teachua-bucket-new"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
+}

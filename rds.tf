@@ -50,6 +50,26 @@ resource "aws_security_group" "rds" {
   }
 }
 
+resource "aws_iam_role" "rds_access_role" {
+  name = "rds-access-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "rds.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "rds_access_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"  
+  role       = aws_iam_role.rds_access_role.name
+}
+
 resource "aws_db_instance" "teachua" {
   identifier             = "teachua"
   instance_class         = "db.t3.micro" 
