@@ -70,6 +70,14 @@ resource "aws_iam_role_policy_attachment" "rds_access_policy" {
   role       = aws_iam_role.rds_access_role.name
 }
 
+data "aws_secretsmanager_secret" "db_password" {
+  name = "teachua-rds-cred"
+}
+
+data "aws_secretsmanager_secret_version" "db_password_version" {
+  secret_id = data.aws_secretsmanager_secret.db_password.id
+}
+
 resource "aws_db_instance" "teachua" {
   identifier             = "teachua"
   instance_class         = "db.t3.micro" 
@@ -77,7 +85,7 @@ resource "aws_db_instance" "teachua" {
   engine                 = "mysql"
   engine_version         = "8.0"  
   username               = "user"
-  password               = var.db_password  
+  password               = jsondecode(data.aws_secretsmanager_secret_version.db_password_version.secret_string)["password"]  
   db_name                = "teachua"  
   db_subnet_group_name   = aws_db_subnet_group.teachua.name
   vpc_security_group_ids = [aws_security_group.rds.id]  

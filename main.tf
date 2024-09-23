@@ -272,6 +272,26 @@ resource "aws_eks_node_group" "private_nodes" {
   ]
 }
 
+resource "aws_iam_role_policy" "nodes_secrets_manager_access" {
+  name = "nodes-secrets-manager-access"
+  role = aws_iam_role.nodes.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "arn:aws:secretsmanager:us-east-1:771919296983:secret:teachua-rds-cred"
+      }
+    ]
+  })
+}
+
+
 data "tls_certificate" "eks" {
   url = aws_eks_cluster.teachua.identity[0].oidc[0].issuer
 }
