@@ -180,31 +180,31 @@ resource "aws_iam_role" "teachua" {
 POLICY
 }
 
-resource "aws_iam_policy" "eks_policy" {
-  name        = "EKSAccessPolicy"
-  description = "Policy for EKS access"
+# resource "aws_iam_policy" "eks_policy" {
+#  name        = "EKSAccessPolicy"
+#  description = "Policy for EKS access"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "eks:DescribeCluster",
-          "eks:ListClusters",
-          "eks:ListNodegroups",
-          "eks:DescribeNodegroup"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
+#  policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Effect = "Allow"
+#        Action = [
+#          "eks:DescribeCluster",
+#          "eks:ListClusters",
+#          "eks:ListNodegroups",
+#          "eks:DescribeNodegroup"
+#        ]
+#        Resource = "*"
+#      }
+#    ]
+#  })
+#}
 
-resource "aws_iam_role_policy_attachment" "attach_eks_policy" {
-  role       = aws_iam_role.teachua.name
-  policy_arn = aws_iam_policy.eks_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "attach_eks_policy" {
+#  role       = aws_iam_role.teachua.name
+#  policy_arn = aws_iam_policy.eks_policy.arn
+# }
 
 resource "aws_iam_role_policy_attachment" "teachua_amazon_eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
