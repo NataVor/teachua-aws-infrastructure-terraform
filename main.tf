@@ -9,6 +9,12 @@ terraform {
       version = "~> 5.67.0"
     }
   }
+
+  backend "s3" {
+    bucket = "teachua-bucket-new"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 resource "aws_vpc" "main" {
@@ -42,62 +48,6 @@ resource "aws_nat_gateway" "nat" {
   }
 
   depends_on = [aws_internet_gateway.igw]
-}
-
-resource "aws_route" "private_nat_route" {
-  route_table_id         = aws_route_table.private_rt.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id
-}
-
-resource "aws_subnet" "private_us_east_1a" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.0.0/19"
-  availability_zone = "us-east-1a"
-
-  tags = {
-    "Name"                            = "private-us-east-1a"
-    "kubernetes.io/role/internal-elb" = "1"
-    "kubernetes.io/cluster/teachua"      = "owned"
-  }
-}
-
-resource "aws_subnet" "private_us_east_1b" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.32.0/19"
-  availability_zone = "us-east-1b"
-
-  tags = {
-    "Name"                            = "private-us-east-1b"
-    "kubernetes.io/role/internal-elb" = "1"
-    "kubernetes.io/cluster/teachua"      = "owned"
-  }
-}
-
-resource "aws_subnet" "public_us_east_1a" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.64.0/19"
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
-
-  tags = {
-    "Name"                       = "public-us-east-1a"
-    "kubernetes.io/role/elb"     = "1"
-    "kubernetes.io/cluster/teachua" = "owned"
-  }
-}
-
-resource "aws_subnet" "public_us_east_1b" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.96.0/19"
-  availability_zone       = "us-east-1b"
-  map_public_ip_on_launch = true
-
-  tags = {
-    "Name"                       = "public-us-east-1b"
-    "kubernetes.io/role/elb"     = "1"
-    "kubernetes.io/cluster/teachua" = "owned"
-  }
 }
 
 resource "aws_route_table" "private" {
@@ -159,7 +109,55 @@ resource "aws_route_table_association" "public_us_east_1b" {
   route_table_id = aws_route_table.public.id
 }
 
+resource "aws_subnet" "private_us_east_1a" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.0.0/19"
+  availability_zone = "us-east-1a"
 
+  tags = {
+    Name                            = "private-us-east-1a"
+    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/teachua"      = "owned"
+  }
+}
+
+resource "aws_subnet" "private_us_east_1b" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.32.0/19"
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name                            = "private-us-east-1b"
+    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/teachua"      = "owned"
+  }
+}
+
+resource "aws_subnet" "public_us_east_1a" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.64.0/19"
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name                       = "public-us-east-1a"
+    "kubernetes.io/role/elb"     = "1"
+    "kubernetes.io/cluster/teachua" = "owned"
+  }
+}
+
+resource "aws_subnet" "public_us_east_1b" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.96.0/19"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name                       = "public-us-east-1b"
+    "kubernetes.io/role/elb"     = "1"
+    "kubernetes.io/cluster/teachua" = "owned"
+  }
+}
 
 resource "aws_iam_role" "teachua" {
   name = "eks-cluster-teachua"
@@ -179,32 +177,6 @@ resource "aws_iam_role" "teachua" {
 }
 POLICY
 }
-
-# resource "aws_iam_policy" "eks_policy" {
-#  name        = "EKSAccessPolicy"
-#  description = "Policy for EKS access"
-
-#  policy = jsonencode({
-#    Version = "2012-10-17"
-#    Statement = [
-#      {
-#        Effect = "Allow"
-#        Action = [
-#          "eks:DescribeCluster",
-#          "eks:ListClusters",
-#          "eks:ListNodegroups",
-#          "eks:DescribeNodegroup"
-#        ]
-#        Resource = "*"
-#      }
-#    ]
-#  })
-#}
-
-# resource "aws_iam_role_policy_attachment" "attach_eks_policy" {
-#  role       = aws_iam_role.teachua.name
-#  policy_arn = aws_iam_policy.eks_policy.arn
-# }
 
 resource "aws_iam_role_policy_attachment" "teachua_amazon_eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
@@ -281,7 +253,7 @@ resource "aws_eks_node_group" "private_nodes" {
 
   scaling_config {
     desired_size = 1
-    max_size     =2
+    max_size     = 2
     min_size     = 0
   }
 
@@ -310,67 +282,3 @@ resource "aws_iam_role_policy" "nodes_secrets_manager_access" {
       {
         Effect = "Allow"
         Action = [
-          "secretsmanager:GetSecretValue",
-          "secretsmanager:DescribeSecret"
-        ]
-        Resource = "arn:aws:secretsmanager:us-east-1:771919296983:secret:teachua-rds-cred"
-      }
-    ]
-  })
-}
-
-
-data "tls_certificate" "eks" {
-  url = aws_eks_cluster.teachua.identity[0].oidc[0].issuer
-}
-
-resource "aws_iam_openid_connect_provider" "eks" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
-  url             = aws_eks_cluster.teachua.identity[0].oidc[0].issuer
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = aws_eks_cluster.teachua.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.teachua.certificate_authority[0].data)
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.teachua.id]
-      command     = "aws"
-    }
-  }
-}
-
-resource "helm_release" "ingress_nginx" {
-  name = "staging"
-
-  repository       = "https://kubernetes.github.io/ingress-nginx"
-  chart            = "ingress-nginx"
-  namespace        = "ingress-nginx"
-  create_namespace = true
-  version          = "4.4.0"
-
-  set {
-    name  = "controller.ingressClassResource.name"
-    value = "external-ingress-nginx"
-  }
-
-  set {
-    name  = "controller.metrics.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
-    value = "nlb"
-  }
-}
-
-terraform {
-  backend "s3" {
-    bucket = "teachua-bucket-new"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
-  }
-}
